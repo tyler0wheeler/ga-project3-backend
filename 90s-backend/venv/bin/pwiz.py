@@ -1,4 +1,4 @@
-#!/Users/tylerwheeler/Desktop/Project-3/ga-project3-backend/90s-backend/venv/bin/python3
+#!/Users/ianramos85/GA/Project-3/ga-project3-backend/90s-backend/venv/bin/python3
 
 import datetime
 import sys
