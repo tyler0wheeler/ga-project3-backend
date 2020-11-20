@@ -41,6 +41,7 @@ def get_one_post(id):
     return jsonify(data=model_to_dict(post), status={"code": 200, "message": "Success"})
 
 @post.route('/userposts/', methods=["GET"])
+@login_required
 def get_one_user():
     # payload = request.get_json()
     # owner = payload['owner']
