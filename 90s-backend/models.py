@@ -10,6 +10,7 @@ class User(UserMixin, Model):
     class Meta:
         database = DATABASE
 
+
 class Post(Model):
     title = CharField()
     img = CharField()
