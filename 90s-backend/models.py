@@ -22,9 +22,15 @@ class Post(Model):
     class Meta:
         database = DATABASE
 
+class Likes (Model):
+    user = ForeignKeyField(User, backref="likes")
+    post = ForeignKeyField(Post, backref="likes")
+    class Meta:
+        database = DATABASE
+
 
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([User, Post], safe=True)
+    DATABASE.create_tables([User, Post, Likes], safe=True)
     print("tables created")
     DATABASE.close()
