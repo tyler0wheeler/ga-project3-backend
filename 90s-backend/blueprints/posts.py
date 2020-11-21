@@ -13,10 +13,12 @@ post = Blueprint('posts', 'post')
 @post.route('/', methods=["GET"])
 def get_all_posts():
     try:
+        # populate the likes here
         posts = [model_to_dict(post) for post in models.Post.select()]
+        likes = [model_to_dict(like) for like in models.Likes.select()]
         # posts = [model_to_dict(post) for post in current_user.posts]
         print(posts)
-        return jsonify(data=posts, status={"code": 201, "message": "Success"})
+        return jsonify(data={"posts":posts, "likes":likes}, status={"code": 201, "message": "Success"})
     except models.DoesNotExist:
         return jsonify(data={}, status={"code": 401, "message": "Error getting this data"})
 
@@ -68,3 +70,15 @@ def delete_post(id):
     message="Successfully deleted {} post with id {}".format(num_of_rows_deleted, id),
     status={"code": 200}
     )
+
+@post.route('/like/<post_id>', methods=["POST"])
+@login_required
+def create_like(post_id):
+    # we need a user id and post id
+    liked_post_id = post_id
+    user_that_liked = current_user.id
+    print(liked_post_id)
+    print(user_that_liked)
+    new_like = models.Likes.create(user=user_that_liked, post=liked_post_id)
+    like_dict = model_to_dict(new_like)
+    return jsonify(datat=like_dict, status={"code": 200, "message": "Success"})
