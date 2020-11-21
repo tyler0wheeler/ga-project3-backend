@@ -6,33 +6,48 @@ from playhouse.shortcuts import model_to_dict
 
 from flask_login import current_user
 
+from flask_login import login_required
+
 post = Blueprint('posts', 'post')
 
 @post.route('/', methods=["GET"])
 def get_all_posts():
     try:
         posts = [model_to_dict(post) for post in models.Post.select()]
+        # posts = [model_to_dict(post) for post in current_user.posts]
         print(posts)
         return jsonify(data=posts, status={"code": 201, "message": "Success"})
     except models.DoesNotExist:
         return jsonify(data={}, status={"code": 401, "message": "Error getting this data"})
 
+
 @post.route('/', methods=["POST"])
+@login_required
 def create_posts():
     payload = request.get_json()
     print(type(payload), 'payload')
-    post = models.Post.create(**payload)
-    print(post.__dict__)
+    # post = models.Post.create(**payload)
+    # print(post.__dict__)
     print(dir(post))
-    print(model_to_dict(post), 'model to dict')
-    post_dict = model_to_dict(post)
+    # print(model_to_dict(post), 'model to dict')
+    new_user_post = models.Post.create(title=payload['title'], img=payload['img'], description=payload['description'], likes=payload['likes'], owner=current_user.id, tags=payload['tags'])
+    post_dict = model_to_dict(new_user_post)
     return jsonify(data=post_dict, status={"code": 200, "message": "Success"})
 
 @post.route('/<id>', methods=["GET"])
 def get_one_post(id):
-    # print(id, 'reserved word')
+    print(id, 'reserved word')
     post = models.Post.get_by_id(id)
     return jsonify(data=model_to_dict(post), status={"code": 200, "message": "Success"})
+
+@post.route('/userposts/', methods=["GET"])
+@login_required
+def get_one_user():
+    # payload = request.get_json()
+    # owner = payload['owner']
+    # print(owner)
+    posts = [model_to_dict(post) for post in current_user.posts]
+    return jsonify(data=posts, status={"code": 200, "message": "Success"})
 
 @post.route('/<id>', methods=["PUT"])
 def update_post(id):
