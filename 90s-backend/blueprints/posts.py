@@ -52,6 +52,7 @@ def get_one_user():
     return jsonify(data=posts, status={"code": 200, "message": "Success"})
 
 @post.route('/<id>', methods=["PUT"])
+@login_required
 def update_post(id):
     payload = request.get_json()
     # print(payload)
@@ -60,6 +61,7 @@ def update_post(id):
     return jsonify(data=model_to_dict(models.Post.get_by_id(id)), status={"code": 200, "message": "Success"})
 
 @post.route('/<id>', methods=["DELETE"])
+@login_required
 def delete_post(id):
     delete_query = models.Post.delete().where(models.Post.id==id)
     num_of_rows_deleted = delete_query.execute()
