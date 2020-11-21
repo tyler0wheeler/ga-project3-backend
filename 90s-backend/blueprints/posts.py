@@ -14,15 +14,15 @@ post = Blueprint('posts', 'post')
 def get_all_posts():
     try:
         posts = [model_to_dict(post) for post in models.Post.select()]
+        likes = [model_to_dict(like) for like in models.Likes.select()]
         # posts = [model_to_dict(post) for post in current_user.posts]
         print(posts)
-        return jsonify(data=posts, status={"code": 201, "message": "Success"})
+        return jsonify(data={"posts":posts, "likes": likes}, status={"code": 201, "message": "Success"})
     except models.DoesNotExist:
         return jsonify(data={}, status={"code": 401, "message": "Error getting this data"})
 
 
 @post.route('/', methods=["POST"])
-@login_required
 def create_posts():
     payload = request.get_json()
     print(type(payload), 'payload')
@@ -68,3 +68,23 @@ def delete_post(id):
     message="Successfully deleted {} post with id {}".format(num_of_rows_deleted, id),
     status={"code": 200}
     )
+
+@post.route('/like/<post_id>', methods=["POST"])
+def create_like(post_id):
+    liked_post_id = post_id
+    user_that_liked = current_user.id
+    new_like = models.Likes.create(post=liked_post_id, user=user_that_liked)
+    like_dict = model_to_dict(new_like)
+    return jsonify(data=like_dict, status={"code": 200, "message": "Success"})
+
+@post.route('/delete/<post_id>', methods=["DELETE"])
+def delete_like(post_id):
+    delete_like_query = models.Likes.delete().where(models.Likes.post==post_id)
+    num_of_rows_like_deleted = delete_like_query.execute()
+    print(num_of_rows_like_deleted)
+    return jsonify(
+    data={},
+    message="Successfully deleted {} like with id {}".format(num_of_rows_like_deleted, post_id),
+    status={"code": 200}
+    )
+
