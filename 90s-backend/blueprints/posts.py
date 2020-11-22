@@ -17,12 +17,14 @@ def get_all_posts():
         likes = [model_to_dict(like) for like in models.Likes.select()]
         # posts = [model_to_dict(post) for post in current_user.posts]
         print(posts)
+        print(likes)
         return jsonify(data={"posts":posts, "likes": likes}, status={"code": 201, "message": "Success"})
     except models.DoesNotExist:
         return jsonify(data={}, status={"code": 401, "message": "Error getting this data"})
 
 
 @post.route('/', methods=["POST"])
+@login_required
 def create_posts():
     payload = request.get_json()
     print(type(payload), 'payload')
@@ -38,7 +40,10 @@ def create_posts():
 def get_one_post(id):
     print(id, 'reserved word')
     post = models.Post.get_by_id(id)
-    return jsonify(data=model_to_dict(post), status={"code": 200, "message": "Success"})
+    likes = [model_to_dict(like) for like in models.Likes.select().where(models.Likes.post == id)]
+    to_return = model_to_dict(post)
+    to_return["likes"] = likes 
+    return jsonify(data=to_return, status={"code": 200, "message": "Success"})
 
 @post.route('/userposts/', methods=["GET"])
 @login_required
@@ -70,6 +75,7 @@ def delete_post(id):
     )
 
 @post.route('/like/<post_id>', methods=["POST"])
+@login_required
 def create_like(post_id):
     liked_post_id = post_id
     user_that_liked = current_user.id

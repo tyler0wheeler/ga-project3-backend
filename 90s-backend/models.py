@@ -15,7 +15,6 @@ class Post(Model):
     title = CharField()
     img = CharField()
     description = CharField()
-    likes = IntegerField(default=0)
     owner = ForeignKeyField(User, backref='posts')
     tags = CharField([]) ## come back to this you idiot
     created_at = DateTimeField(default=datetime.datetime.now)
