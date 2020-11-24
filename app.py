@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, g
 from flask_cors import CORS
 import models
@@ -32,18 +33,24 @@ app.register_blueprint(user, url_prefix='/90s/users/')
 
 @app.before_request
 def before_request():
+    """Connect to the db before each request"""
     g.db = models.DATABASE
     g.db.connect()
 
 
 @app.after_request
 def after_request(response):
+    """Connect to the db before each request"""
     g.db.close()
     return response
 
 @app.route('/')
 def index():
     return 'hi'
+
+if 'ON_HEROKU' in os.environ:
+    print('\non heroku!')
+    models.initialize()
 if __name__ == '__main__':
     models.initialize()
     app.run(debug=DEBUG, port=PORT)
