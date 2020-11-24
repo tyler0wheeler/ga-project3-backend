@@ -5,7 +5,7 @@ from playhouse.shortcuts import model_to_dict
 from flask_login import login_user, current_user, logout_user
 user = Blueprint('users', 'user')
 
-@user.route('', methods=["GET"])
+@user.route('/', methods=["GET"])
 def test_user_resource():
     try:
         users = [model_to_dict(user) for user in models.User.select()]
@@ -14,7 +14,7 @@ def test_user_resource():
         return jsonify(data={}, status={"code": 401, "message": "Error getting the resources"})
     return "user resource works"
 
-@user.route('register/', methods=["POST"])
+@user.route('/register/', methods=["POST"])
 def register():
     payload = request.get_json()
     payload["username"] = payload["username"].lower()
@@ -40,7 +40,7 @@ def register():
             status=201
         ), 201
 
-@user.route('login/', methods=["POST"])
+@user.route('/login/', methods=["POST"])
 def login():
     payload = request.get_json()
     payload["username"]=payload["username"].lower()
@@ -69,7 +69,7 @@ def login():
             status=401
         ), 401
 
-@user.route('logout/', methods=["GET"])
+@user.route('/logout/', methods=["GET"])
 def logout():
     logout_user() # this line will need to be imported
     return jsonify(data={}, status={'code': 200, 'message': 'successful logout'})
