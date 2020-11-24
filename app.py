@@ -25,8 +25,8 @@ def load_user(user_id):
     except models.DoesNotExist:
         return None
 
-CORS(post, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(user, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(post, origins=['http://localhost:3000' ,'https://the-90s-app.herokuapp.com/'], supports_credentials=True)
+CORS(user, origins=['http://localhost:3000' ,'https://the-90s-app.herokuapp.com/'], supports_credentials=True)
 
 app.register_blueprint(post, url_prefix='/90s/posts/')
 app.register_blueprint(user, url_prefix='/90s/users/')
