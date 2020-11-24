@@ -10,7 +10,7 @@ from flask_login import login_required
 
 post = Blueprint('posts', 'post')
 
-@post.route('/', methods=["GET"])
+@post.route('', methods=["GET"])
 def get_all_posts():
     try:
         # populate the likes here
@@ -23,7 +23,7 @@ def get_all_posts():
         return jsonify(data={}, status={"code": 401, "message": "Error getting this data"})
 
 
-@post.route('/', methods=["POST"])
+@post.route('', methods=["POST"])
 @login_required
 def create_posts():
     payload = request.get_json()
@@ -36,13 +36,13 @@ def create_posts():
     post_dict = model_to_dict(new_user_post)
     return jsonify(data=post_dict, status={"code": 200, "message": "Success"})
 
-@post.route('/<id>', methods=["GET"])
+@post.route('<id>', methods=["GET"])
 def get_one_post(id):
     print(id, 'reserved word')
     post = models.Post.get_by_id(id)
     return jsonify(data=model_to_dict(post), status={"code": 200, "message": "Success"})
 
-@post.route('/userposts/', methods=["GET"])
+@post.route('userposts/', methods=["GET"])
 @login_required
 def get_one_user():
     # payload = request.get_json()
@@ -51,7 +51,7 @@ def get_one_user():
     posts = [model_to_dict(post) for post in current_user.posts]
     return jsonify(data=posts, status={"code": 200, "message": "Success"})
 
-@post.route('/<id>', methods=["PUT"])
+@post.route('<id>', methods=["PUT"])
 @login_required
 def update_post(id):
     payload = request.get_json()
@@ -60,7 +60,7 @@ def update_post(id):
     query.execute()
     return jsonify(data=model_to_dict(models.Post.get_by_id(id)), status={"code": 200, "message": "Success"})
 
-@post.route('/<id>', methods=["DELETE"])
+@post.route('<id>', methods=["DELETE"])
 @login_required
 def delete_post(id):
     delete_query = models.Post.delete().where(models.Post.id==id)
@@ -73,7 +73,7 @@ def delete_post(id):
     status={"code": 200}
     )
 
-@post.route('/like/<post_id>', methods=["POST"])
+@post.route('like/<post_id>', methods=["POST"])
 @login_required
 def create_like(post_id):
     liked_post_id = post_id
@@ -82,7 +82,7 @@ def create_like(post_id):
     like_dict = model_to_dict(new_like)
     return jsonify(data=like_dict, status={"code": 200, "message": "Success"})
 
-@post.route('/delete/<post_id>', methods=["DELETE"])
+@post.route('delete/<post_id>', methods=["DELETE"])
 @login_required
 def delete_like(post_id):
     delete_like_query = models.Likes.delete().where(models.Likes.post==post_id)
