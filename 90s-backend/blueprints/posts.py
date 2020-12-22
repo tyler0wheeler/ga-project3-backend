@@ -84,8 +84,9 @@ def create_like(post_id):
     return jsonify(data=like_dict, status={"code": 200, "message": "Success"})
 
 @post.route('/delete/<post_id>', methods=["DELETE"])
+@login_required
 def delete_like(post_id):
-    delete_like_query = models.Likes.delete().where(models.Likes.post==post_id)
+    delete_like_query = models.Likes.delete().where((models.Likes.post==post_id) & (models.Likes.user_id==current_user.id))
     num_of_rows_like_deleted = delete_like_query.execute()
     print(num_of_rows_like_deleted)
     return jsonify(
@@ -93,4 +94,3 @@ def delete_like(post_id):
     message="Successfully deleted {} like with id {}".format(num_of_rows_like_deleted, post_id),
     status={"code": 200}
     )
-
