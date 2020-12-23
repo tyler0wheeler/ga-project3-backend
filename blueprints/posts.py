@@ -48,8 +48,9 @@ def get_one_user():
     # payload = request.get_json()
     # owner = payload['owner']
     # print(owner)
+    likes = [model_to_dict(like) for like in models.Likes.select()]
     posts = [model_to_dict(post) for post in current_user.posts]
-    return jsonify(data=posts, status={"code": 200, "message": "Success"})
+    return jsonify(data={"posts":posts, "likes":likes}, status={"code": 200, "message": "Success"})
 
 @post.route('/<id>', methods=["PUT"])
 @login_required
@@ -85,7 +86,7 @@ def create_like(post_id):
 @post.route('/delete/<post_id>', methods=["DELETE"])
 @login_required
 def delete_like(post_id):
-    delete_like_query = models.Likes.delete().where(models.Likes.post==post_id)
+    delete_like_query = models.Likes.delete().where((models.Likes.post==post_id) & (models.Likes.user_id==current_user.id))
     num_of_rows_like_deleted = delete_like_query.execute()
     print(num_of_rows_like_deleted)
     return jsonify(
@@ -93,3 +94,10 @@ def delete_like(post_id):
     message="Successfully deleted {} like with id {}".format(num_of_rows_like_deleted, post_id),
     status={"code": 200}
     )
+@post.route('/delete-all-likes/<post_id>', methods=["DELETE"])
+@login_required
+def delete_all_likes(post_id):
+    delete_all_likes_query= models.Likes.delete().where(models.Likes.post==post_id)
+    num_of_rows_likes_deleted = delete_all_likes_query.execute()
+    print(num_of_rows_likes_deleted)
+    return jsonify(data={}, message="Successfully deleted {} post with id {}".format(num_of_rows_likes_deleted, post_id), status={"code":200}) 
