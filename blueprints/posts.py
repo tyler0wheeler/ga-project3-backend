@@ -32,7 +32,7 @@ def create_posts():
     # print(post.__dict__)
     print(dir(post))
     # print(model_to_dict(post), 'model to dict')
-    new_user_post = models.Post.create(title=payload['title'], img=payload['img'], description=payload['description'], likes=payload['likes'], owner=current_user.id, tags=payload['tags'])
+    new_user_post = models.Post.create(title=payload['title'], img=payload['img'], description=payload['description'], owner=current_user.id, tags=payload['tags'])
     post_dict = model_to_dict(new_user_post)
     return jsonify(data=post_dict, status={"code": 200, "message": "Success"})
 
@@ -97,7 +97,7 @@ def delete_like(post_id):
 @post.route('/delete-all-likes/<post_id>', methods=["DELETE"])
 @login_required
 def delete_all_likes(post_id):
-    delete_all_likes_query= models.Likes.delete().where(models.Likes.post==post_id)
+    delete_all_likes_query= models.Likes.delete().where(models.Likes.post_id==post_id)
     num_of_rows_likes_deleted = delete_all_likes_query.execute()
     print(num_of_rows_likes_deleted)
-    return jsonify(data={}, message="Successfully deleted {} post with id {}".format(num_of_rows_likes_deleted, post_id), status={"code":200}) 
+    return jsonify(data={}, message="Successfully deleted {} likes with id {}".format(num_of_rows_likes_deleted, post_id), status={"code":200}) 
