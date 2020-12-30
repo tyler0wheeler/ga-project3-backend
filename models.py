@@ -23,7 +23,7 @@ class Post(Model):
     description = CharField()
     likes = IntegerField(default=0)
     owner = ForeignKeyField(User, backref='posts')
-    tags = CharField([]) ## come back to this you idiot
+    tags = CharField([])
     created_at = DateTimeField(default=datetime.datetime.now)
     class Meta:
         database = DATABASE

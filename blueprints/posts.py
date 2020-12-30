@@ -13,11 +13,8 @@ post = Blueprint('posts', 'post')
 @post.route('/', methods=["GET"])
 def get_all_posts():
     try:
-        # populate the likes here
         posts = [model_to_dict(post) for post in models.Post.select()]
         likes = [model_to_dict(like) for like in models.Likes.select()]
-        # posts = [model_to_dict(post) for post in current_user.posts]
-        print(posts)
         return jsonify(data={"posts":posts, "likes":likes}, status={"code": 201, "message": "Success"})
     except models.DoesNotExist:
         return jsonify(data={}, status={"code": 401, "message": "Error getting this data"})
@@ -27,27 +24,18 @@ def get_all_posts():
 @login_required
 def create_posts():
     payload = request.get_json()
-    print(type(payload), 'payload')
-    # post = models.Post.create(**payload)
-    # print(post.__dict__)
-    print(dir(post))
-    # print(model_to_dict(post), 'model to dict')
     new_user_post = models.Post.create(title=payload['title'], img=payload['img'], description=payload['description'], owner=current_user.id, tags=payload['tags'])
     post_dict = model_to_dict(new_user_post)
     return jsonify(data=post_dict, status={"code": 200, "message": "Success"})
 
 @post.route('/<id>', methods=["GET"])
 def get_one_post(id):
-    print(id, 'reserved word')
     post = models.Post.get_by_id(id)
     return jsonify(data=model_to_dict(post), status={"code": 200, "message": "Success"})
 
 @post.route('/userposts/', methods=["GET"])
 @login_required
 def get_one_user():
-    # payload = request.get_json()
-    # owner = payload['owner']
-    # print(owner)
     likes = [model_to_dict(like) for like in models.Likes.select()]
     posts = [model_to_dict(post) for post in current_user.posts]
     return jsonify(data={"posts":posts, "likes":likes}, status={"code": 200, "message": "Success"})
@@ -56,7 +44,6 @@ def get_one_user():
 @login_required
 def update_post(id):
     payload = request.get_json()
-    # print(payload)
     query = models.Post.update(**payload).where(models.Post.id==id)
     query.execute()
     return jsonify(data=model_to_dict(models.Post.get_by_id(id)), status={"code": 200, "message": "Success"})
@@ -66,8 +53,6 @@ def update_post(id):
 def delete_post(id):
     delete_query = models.Post.delete().where(models.Post.id==id)
     num_of_rows_deleted = delete_query.execute()
-    print(num_of_rows_deleted)
-    # write logic -- if you have no rows deleted you will proabbly want some message telling you so
     return jsonify(
     data={},
     message="Successfully deleted {} post with id {}".format(num_of_rows_deleted, id),
@@ -88,7 +73,6 @@ def create_like(post_id):
 def delete_like(post_id):
     delete_like_query = models.Likes.delete().where((models.Likes.post==post_id) & (models.Likes.user_id==current_user.id))
     num_of_rows_like_deleted = delete_like_query.execute()
-    print(num_of_rows_like_deleted)
     return jsonify(
     data={},
     message="Successfully deleted {} like with id {}".format(num_of_rows_like_deleted, post_id),
@@ -99,5 +83,4 @@ def delete_like(post_id):
 def delete_all_likes(post_id):
     delete_all_likes_query= models.Likes.delete().where(models.Likes.post_id==post_id)
     num_of_rows_likes_deleted = delete_all_likes_query.execute()
-    print(num_of_rows_likes_deleted)
     return jsonify(data={}, message="Successfully deleted {} likes with id {}".format(num_of_rows_likes_deleted, post_id), status={"code":200}) 

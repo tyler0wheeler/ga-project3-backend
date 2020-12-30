@@ -11,10 +11,10 @@ PORT = 8000
 
 app = Flask(__name__)
 
-# app.config.update(
-#   SESSION_COOKIE_SECURE=True,
-#   SESSION_COOKIE_SAMESITE='None'
-# )
+app.config.update(
+  SESSION_COOKIE_SECURE=True,
+  SESSION_COOKIE_SAMESITE='None'
+)
 
 app.secret_key = "tyler audrey ian devin"
 login_manager = LoginManager()
@@ -23,7 +23,6 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     try:
-        print("loading the following user")
         user = models.User.get_by_id(user_id)
         return user
 
